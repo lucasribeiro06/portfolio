@@ -1,3 +1,4 @@
+![Workflow Diagram](RSS Read and Classifier/workflowrssread.png)
 # RSS Content Qualifier
 Automates the ingestion of RSS feeds and filters content based on specific business requirements (ICP).
 
