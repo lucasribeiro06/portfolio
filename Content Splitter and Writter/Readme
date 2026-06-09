@@ -1,0 +1,12 @@
+# Multi-Channel Content Writer
+Transforms raw URLs into polished, platform-native content for LinkedIn, Twitter, and Newsletters.
+
+## Key Features
+- **Web Scraping**: Utilizes Firecrawl to ingest clean markdown from any URL.
+- **Multi-Model Processing**: Uses Gemini for drafting and Groq (Llama 3.3) for high-retention editorial polishing.
+- **Cross-Channel Delivery**: Generates unique formats for LinkedIn (Hook-focused), Twitter (Thread-based), and Newsletters (Consultative).
+
+## How to setup
+1. Insert your Google Sheet URL into the `Google Sheets Trigger` node.
+2. Add your Gemini, Groq, and Firecrawl API keys to the respective n8n credentials.
+3. Once a new row is added to your sheet, the workflow generates all drafts automatically.
