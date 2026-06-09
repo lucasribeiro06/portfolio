@@ -1,0 +1,12 @@
+# JobHunter: Modular Hunting Engine
+A three-pipeline automated engine to scrape LinkedIn, score relevance, and email high-quality job matches.
+
+## Pipelines
+1. **Pipeline 1 (Scraper)**: Fetches jobs from LinkedIn search URLs and logs them to Sheets.
+2. **Pipeline 2 (AI Enrichment)**: Evaluates job descriptions against your candidate profile (skills, tech stack, deal-breakers).
+3. **Pipeline 3 (Digest)**: Compiles jobs with a match score >= 75 into a clean HTML email digest.
+
+## Setup Instructions
+- **API Keys**: Configure Google Sheets, LinkedIn (via HTTP Request), and Gemini/Groq keys.
+- **Configuration**: Use the green `[CONFIG]` nodes to set your search URLs, target roles, and destination email.
+- **Triggering**: Schedule nodes are pre-configured for 6h (Scraper), 8h (AI), and 08:00 AM (Digest).
