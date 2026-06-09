@@ -1,0 +1,13 @@
+# RSS Content Qualifier
+Automates the ingestion of RSS feeds and filters content based on specific business requirements (ICP).
+
+## Key Features
+- **HTML Normalization**: Cleans raw RSS feed content into usable text.
+- **Deduplication**: Checks Google Sheets to ensure no redundant entries are processed.
+- **AI Qualification**: Uses Gemini to analyze content against your specific criteria (ICP).
+- **Automated Logging**: Updates qualifying results directly to your Google Sheet.
+
+## How to setup
+1. Duplicate the target Google Sheet structure.
+2. Configure the `Sticky Note` node with your specific ICP requirements.
+3. Update the `Google Sheets` nodes with your `Document ID` and `Sheet Name`.
