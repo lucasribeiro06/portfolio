@@ -1,3 +1,4 @@
+![Workflow Diagram](JubHunter/workflowjobhunter.png)
 # JobHunter: Modular Hunting Engine
 A three-pipeline automated engine to scrape LinkedIn, score relevance, and email high-quality job matches.
 
