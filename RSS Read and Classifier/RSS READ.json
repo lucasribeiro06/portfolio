@@ -1,0 +1,565 @@
+{
+  "name": "RSS READ(post)",
+  "nodes": [
+    {
+      "parameters": {
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "ID",
+              "field2": "ID"
+            }
+          ]
+        },
+        "resolve": "preferInput1",
+        "fuzzyCompare": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.compareDatasets",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        -32
+      ],
+      "name": "Compare Datasets",
+      "id": "88e209ed-43f0-4691-88d7-726fb94619b1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_NAME_HERE",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Conteúdo": "={{ $json.content }}",
+            "Titulo": "={{ $json.Titulo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "type": "string"
+            },
+            {
+              "id": "Titulo",
+              "displayName": "Titulo",
+              "type": "string"
+            },
+            {
+              "id": "Conteúdo",
+              "displayName": "Conteúdo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -48
+      ],
+      "name": "Append row in sheet",
+      "id": "2f0a9aaa-e1d5-45c4-a30d-f2884d007ff2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -96
+      ],
+      "name": "When clicking ‘Execute workflow’",
+      "id": "be9a7174-375e-4b9f-b1e2-43ae483653ac"
+    },
+    {
+      "parameters": {
+        "url": "https://example.com/api/feed.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        -32
+      ],
+      "name": "RSS Read",
+      "id": "a53e1ea5-5b13-4b55-955f-9f128200908a"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        32
+      ],
+      "name": "Schedule Trigger",
+      "id": "b2de3c7f-49e4-40cc-8e1c-c7d7a541890d"
+    },
+    {
+      "parameters": {
+        "content": "## RSS READ\n**Insert your target production feed URL here**\n",
+        "height": 112,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        416,
+        -192
+      ],
+      "name": "Sticky Note",
+      "id": "1ef613e3-c2df-441d-b180-aa6374b651ce",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  const data = item.json;\n  let rawContent = data.content || data.contentSnippet || \"\";\n  let rawTitle = data.title || \"\";\n  let rawGuid = data.guid || data.id || \"\";\n  \n  rawContent = rawContent.replace(/<\\/p>/gi, '\\n\\n').replace(/<br[^>]*>/gi, '\\n');\n  rawContent = rawContent.replace(/<[^>]+>/g, ' ');\n\n  const cleanString = (str) => {\n    return str\n      .replace(/&nbsp;/g, ' ')\n      .replace(/&amp;/g, '&')\n      .replace(/&lt;/g, '<')\n      .replace(/&gt;/g, '>')\n      .replace(/&quot;/g, '\"')\n      .replace(/&#x27;/g, \"'\")\n      .replace(/&#39;/g, \"'\")\n      .replace(/\\s+/g, ' ') \n      .trim();\n  };\n\n  return {\n    json: {\n      ID: cleanString(rawGuid).toLowerCase(),\n      content: cleanString(rawContent),\n      Titulo: cleanString(rawTitle)\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -32
+      ],
+      "name": "HTML Stripping & Normalization",
+      "id": "116f1aff-d25e-4ae5-b97b-85108d4a6ee8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_NAME_HERE",
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $json.ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        864,
+        32
+      ],
+      "name": "Check Previous results",
+      "id": "8d0ad16f-9997-44b2-b433-b0c9e73848ab",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Z25YcfW3jD44yYrk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cond-1",
+              "leftValue": "={{ $json.Output }}",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cond-2",
+              "leftValue": "={{ $json['Conteúdo'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1712,
+        -48
+      ],
+      "name": "If",
+      "id": "d7804e13-7ece-4835-b3f6-ce9f0b2867bf"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following Post:\nTitle:  {{ $json.Titulo }}\nContent: {{ $json['Conteúdo'] }}\nPassthrough the ID {{ $json.ID }}",
+        "needsFallback": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $('Input your requirements').item.json.requirements }}"
+            }
+          ]
+        },
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 15000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2160,
+        -176
+      ],
+      "name": "Basic LLM Chain",
+      "id": "0d66e199-aca4-447f-bb2a-f51656c9b5ec"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2176,
+        48
+      ],
+      "name": "Google Gemini Chat Model",
+      "id": "cb81307e-5145-4687-9d9f-9d4982d003af"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1936,
+        -48
+      ],
+      "name": "Loop Over Items",
+      "id": "de9f1060-3ca8-46e5-89fd-c300aa96845e"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_NAME_HERE",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Loop Over Items').item.json.ID }}",
+            "Output": "={{ $json.text }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "type": "string"
+            },
+            {
+              "id": "Output",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2512,
+        -176
+      ],
+      "name": "Update row in sheet",
+      "id": "ca1df096-c667-4580-9f0c-33cd67c1aab3"
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2736,
+        -48
+      ],
+      "name": "Wait",
+      "id": "440424bf-fe2e-4e34-83d2-e1838ea02c44",
+      "webhookId": "07369e8b-741f-4671-ad54-42708dbea003"
+    },
+    {
+      "parameters": {
+        "content": "## Requirements\n**Insert all the criteria to qualify your inbound target**\n",
+        "height": 112,
+        "width": 182
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        -176
+      ],
+      "name": "Sticky Note1",
+      "id": "5c75fca9-98ac-4ce1-a157-d5ce5754e0b9",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "req-1",
+              "name": "requirements",
+              "value": "INPUT YOUR ICP AND RECRUITING FILTER REQUIREMENTS TO MATCH HERE",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -32
+      ],
+      "name": "Input your requirements",
+      "id": "293d5de6-3534-4f16-aa2c-b3b6563a90f0"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Compare Datasets": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Input your requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "HTML Stripping & Normalization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input your requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Stripping & Normalization": {
+      "main": [
+        [
+          {
+            "node": "Check Previous results",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Compare Datasets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Previous results": {
+      "main": [
+        [
+          {
+            "node": "Compare Datasets",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input your requirements": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "632b433c-3713-404f-8a98-b485bb5b85be",
+  "meta": {
+    "instanceId": "c6cb6b9bcaae3df797ba7c82db51b00b75a488310812c319c776a47df059a9a1"
+  },
+  "id": "ZDDRnXtPYwO8825t",
+  "tags": []
+}
